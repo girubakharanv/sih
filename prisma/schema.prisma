@@ -1,0 +1,801 @@
+datasource db {
+  provider = "sqlite" // production-ready for self-contained hackathon evaluation and zero-dependency deploy, or postgresql via DATABASE_URL
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// =========================================================================
+// 1. IDENTITY, AUTH & ACCESS CONTROL
+// =========================================================================
+
+enum RoleType {
+  CUSTOMER
+  WORKER
+  COOP_MANAGER
+  GOVT_ADMIN
+}
+
+model User {
+  id               String            @id @default(uuid())
+  email            String?           @unique
+  phone            String            @unique
+  passwordHash     String
+  role             RoleType          @default(CUSTOMER)
+  isVerified       Boolean           @default(false)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  
+  // Profiles
+  customerProfile  CustomerProfile?
+  workerProfile    WorkerProfile?
+  coopManagerOf    Cooperative?      @relation("CoopManager")
+  govtAdminOf      GovernmentOrganization? @relation("GovtAdmin")
+
+  // Audit and logs
+  auditLogs        AuditLog[]
+  notifications    Notification[]
+  votes            Vote[]
+  welfareRequests  WelfareRequest[]
+}
+
+model Role {
+  id          String   @id @default(uuid())
+  name        RoleType @unique
+  description String
+  permissions String   // JSON array of permission strings
+}
+
+model CustomerProfile {
+  id                      String   @id @default(uuid())
+  userId                  String   @unique
+  user                    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fullName                String
+  avatarUrl               String?
+  languagePreference      String   @default("en")
+  defaultAddress          String
+  savedAddressesJson      String   @default("[]") // JSON string of saved addresses
+  emergencyContactName    String?
+  emergencyContactPhone   String?
+  notificationPrefsJson   String   @default("{\"sms\":true,\"whatsapp\":true,\"inApp\":true}")
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+
+  requests                ServiceRequest[]
+  jobs                    Job[]
+  feedbacks               Feedback[]
+  payments                Payment[]
+}
+
+model Cooperative {
+  id                   String            @id @default(uuid())
+  name                 String
+  registrationCode     String            @unique
+  sectorJurisdiction   String
+  treasuryBalance      Float             @default(0.0)
+  welfareReservePool   Float             @default(0.0)
+  trainingReservePool  Float             @default(0.0)
+  capitalReservePool   Float             @default(0.0)
+  managerId            String?           @unique
+  manager              User?             @relation("CoopManager", fields: [managerId], references: [id])
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
+
+  workers              WorkerProfile[]
+  proposals            Proposal[]
+  welfareDecisions     WelfareDecision[]
+  trainings            Training[]
+  crisisDeployments    CrisisDeployment[]
+  digitalTwinScenarios DigitalTwinScenario[]
+  ledgerEntries        LedgerEntry[]
+}
+
+model GovernmentOrganization {
+  id                   String   @id @default(uuid())
+  name                 String
+  jurisdictionZone     String
+  departmentCode       String   @unique
+  adminId              String?  @unique
+  admin                User?    @relation("GovtAdmin", fields: [adminId], references: [id])
+  auditPublicKey       String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  metrics              GovernmentMetric[]
+  impactMetrics        ImpactMetric[]
+}
+
+// =========================================================================
+// 2. WORKER IDENTITY, VERIFICATION & PASSPORT (SEPARATE FROM LOGIN IDENTITY)
+// =========================================================================
+
+enum GuildTier {
+  BEGINNER
+  VERIFIED_ARTISAN
+  ADVANCED_SPECIALIST
+  GUILD_MENTOR
+}
+
+enum VerificationStatus {
+  SELF_DECLARED
+  EVIDENCE_ATTACHED
+  COOP_AUDITED
+  PEER_ENDORSED
+  VERIFIED_MASTER
+}
+
+model WorkerProfile {
+  id                      String          @id @default(uuid())
+  userId                  String          @unique
+  user                    User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cooperativeId           String?
+  cooperative             Cooperative?    @relation(fields: [cooperativeId], references: [id])
+  fullName                String
+  avatarUrl               String?
+  bio                     String?
+  baseSector              String
+  baseLat                 Float
+  baseLng                 Float
+  tradeCategoriesJson     String          @default("[]") // Array of service categories
+  yearsExperience         Int             @default(1)
+  tier                    GuildTier       @default(BEGINNER)
+  isDutyActive            Boolean         @default(true)
+  bankUpiVpa              String?
+  emergencyContactName    String?
+  emergencyContactPhone   String?
+  createdAt               DateTime        @default(now())
+  updatedAt               DateTime        @updatedAt
+
+  passport                WorkerPassport?
+  trustScore              TrustScore?
+  availability            Availability?
+  wellbeingRecord         WellbeingRecord?
+  skills                  WorkerSkill[]
+  certifications          Certification[]
+  jobAssignments          JobAssignment[]
+  endorsedByOthers        PeerEndorsement[] @relation("EndorsedWorker")
+  endorsementsGiven       PeerEndorsement[] @relation("EndorserWorker")
+  trainingsAttended       Training[]
+  skillGaps               SkillGap[]
+  crisisTeamAssignments   CrisisTeam[]
+  feedbacksReceived       Feedback[]
+}
+
+model WorkerPassport {
+  id                      String        @id @default(uuid())
+  workerProfileId         String        @unique
+  workerProfile           WorkerProfile @relation(fields: [workerProfileId], references: [id], onDelete: Cascade)
+  sovereignDid            String        @unique // e.g. did:univo:worker:7089-karthik
+  publicKeyHex            String
+  qrPayload               String
+  zeroIncidentHours       Int           @default(0)
+  completedMissionsCount  Int           @default(0)
+  coopQuorumVotingPct     Float         @default(100.0)
+  languagesJson           String        @default("[\"Tamil\",\"English\"]")
+  verifiedAt              DateTime      @default(now())
+  updatedAt               DateTime      @updatedAt
+}
+
+model WorkerSkill {
+  id               String             @id @default(uuid())
+  workerProfileId  String
+  workerProfile    WorkerProfile      @relation(fields: [workerProfileId], references: [id], onDelete: Cascade)
+  skillName        String
+  category         String
+  proficiency      Float              @default(50.0) // 0 - 100%
+  verification     SkillVerification?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+}
+
+model SkillVerification {
+  id                 String             @id @default(uuid())
+  workerSkillId      String             @unique
+  workerSkill        WorkerSkill        @relation(fields: [workerSkillId], references: [id], onDelete: Cascade)
+  status             VerificationStatus @default(SELF_DECLARED)
+  verifiedAt         DateTime?
+  verifierName       String?
+  verifierAuthority  String?
+  evidenceDocUri     String?
+  evidenceDocHash    String?            // SHA-256 checksum
+  peerEndorsements   Int                @default(0)
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+}
+
+model Certification {
+  id                 String        @id @default(uuid())
+  workerProfileId    String
+  workerProfile      WorkerProfile @relation(fields: [workerProfileId], references: [id], onDelete: Cascade)
+  title              String
+  issuingAuthority   String        // e.g. ITI, NSDC, Schneider Electric, MNRE
+  certificateNumber  String
+  issuedDate         DateTime
+  expiryDate         DateTime?
+  documentUri        String?
+  documentHash       String?
+  isAudited          Boolean       @default(false)
+  createdAt          DateTime      @default(now())
+}
+
+model SkillDNA {
+  id                 String   @id @default(uuid())
+  targetIdentifier   String   // workerId or category
+  vectorDataJson     String   // High dimensional skill vector JSON
+  overallProficiency Float
+  lastCalibration    DateTime @default(now())
+}
+
+model TrustScore {
+  id                 String        @id @default(uuid())
+  workerProfileId    String        @unique
+  workerProfile      WorkerProfile @relation(fields: [workerProfileId], references: [id], onDelete: Cascade)
+  overallTrust       Float         @default(95.0)
+  skillExecution     Float         @default(95.0)
+  reliability        Float         @default(95.0)
+  safetyProtocol     Float         @default(100.0)
+  punctuality        Float         @default(95.0)
+  customerFeedback   Float         @default(95.0)
+  peerTrust          Float         @default(95.0)
+  mentoringBonus     Float         @default(0.0)
+  updatedAt          DateTime      @updatedAt
+}
+
+model PeerEndorsement {
+  id               String        @id @default(uuid())
+  endorserId       String
+  endorser         WorkerProfile @relation("EndorserWorker", fields: [endorserId], references: [id])
+  targetWorkerId   String
+  targetWorker     WorkerProfile @relation("EndorsedWorker", fields: [targetWorkerId], references: [id])
+  skillName        String
+  endorsementNote  String?
+  createdAt        DateTime      @default(now())
+}
+
+model Availability {
+  id                 String        @id @default(uuid())
+  workerProfileId    String        @unique
+  workerProfile      WorkerProfile @relation(fields: [workerProfileId], references: [id], onDelete: Cascade)
+  isAvailable        Boolean       @default(true)
+  maxDailyWorkload   Int           @default(4)
+  serviceRadiusKm    Float         @default(8.0)
+  activeTimeSlots    String        @default("08:00 - 18:00")
+  scheduledRestUntil DateTime?
+  updatedAt          DateTime      @updatedAt
+}
+
+// =========================================================================
+// 3. SERVICE DIRECTORY & SERVICE REQUEST
+// =========================================================================
+
+model ServiceCategory {
+  id                 String    @id @default(uuid())
+  chamberCode        String    @unique // e.g. RM-01, RM-02
+  name               String
+  description        String
+  colorHex           String
+  iconName           String
+  activeWorkersCount Int       @default(0)
+  services           Service[]
+}
+
+model Service {
+  id                String          @id @default(uuid())
+  categoryId        String
+  category          ServiceCategory @relation(fields: [categoryId], references: [id])
+  name              String
+  baseLaborPrice    Float
+  estimatedDuration Int             // in minutes
+  requiredSkills    String          // JSON array of strings
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+}
+
+enum IntakeMode {
+  PHOTO
+  VOICE
+  TEXT
+}
+
+enum UrgencyLevel {
+  STANDARD
+  ELEVATED
+  CRITICAL
+}
+
+enum SeverityLevel {
+  LOW
+  MODERATE
+  HIGH
+  CRITICAL
+}
+
+model ServiceRequest {
+  id                     String        @id @default(uuid())
+  customerProfileId      String
+  customer               CustomerProfile @relation(fields: [customerProfileId], references: [id])
+  intakeMode             IntakeMode
+  rawInputText           String?
+  rawInputMediaUrl       String?
+  inputLanguage          String        @default("en")
+  serviceCategory        String
+  chamberCode            String
+  detectedProblem        String
+  urgency                UrgencyLevel  @default(STANDARD)
+  severity               SeverityLevel @default(MODERATE)
+  requiredSkillsJson     String        // JSON array
+  estimatedDurationMins  Int
+  priceEstimateMin       Float
+  priceEstimateMax       Float
+  aiConfidence           Float
+  isPreliminaryDiagnosis Boolean       @default(true)
+  targetAddress          String
+  targetLat              Float?
+  targetLng              Float?
+  preferredTimeSlot      String
+  createdAt              DateTime      @default(now())
+  
+  job                    Job?
+}
+
+// =========================================================================
+// 4. JOBS, DISPATCH SCORING & ROUTING
+// =========================================================================
+
+enum JobStatus {
+  PENDING_QUALIFICATION
+  MATCHING
+  DISPATCHED
+  IN_TRANSIT
+  ARRIVED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  RESCHEDULED
+}
+
+model Job {
+  id                 String          @id @default(uuid())
+  serviceRequestId   String          @unique
+  serviceRequest     ServiceRequest  @relation(fields: [serviceRequestId], references: [id])
+  customerId         String
+  customer           CustomerProfile @relation(fields: [customerId], references: [id])
+  title              String
+  category           String
+  status             JobStatus       @default(DISPATCHED)
+  urgency            UrgencyLevel
+  locationAddress    String
+  laborPrice         Float
+  partsPrice         Float           @default(0.0)
+  totalAmount        Float
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+
+  assignments        JobAssignment[]
+  dispatchScores     DispatchScore[]
+  fairnessAdjustment FairnessAdjustment?
+  routePlan          RoutePlan?
+  payment            Payment?
+  feedback           Feedback?
+  ledgerEntries      LedgerEntry[]
+}
+
+model JobAssignment {
+  id                 String        @id @default(uuid())
+  jobId              String
+  job                Job           @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  workerProfileId    String
+  workerProfile      WorkerProfile @relation(fields: [workerProfileId], references: [id])
+  assignedAt         DateTime      @default(now())
+  acceptedAt         DateTime?
+  declinedAt         DateTime?
+  declineReason      String?
+  arrivedAt          DateTime?
+  completedAt        DateTime?
+  status             String        @default("ACTIVE") // ACTIVE, ACCEPTED, DECLINED, COMPLETED
+}
+
+model DispatchScore {
+  id                 String   @id @default(uuid())
+  jobId              String
+  job                Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  workerId           String
+  workerName         String
+  baseScore          Float
+  skillPoints        Float
+  trustPoints        Float
+  distancePoints     Float
+  reliabilityPoints  Float
+  availabilityPoints Float
+  fatiguePenalty     Float    @default(0.0)
+  finalSuitability   Float
+  rankPosition       Int
+  createdAt          DateTime @default(now())
+}
+
+model FairnessAdjustment {
+  id                 String   @id @default(uuid())
+  jobId              String   @unique
+  job                Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  selectedWorkerId   String
+  recentMissions14d  Int
+  sectorAverage14d   Float
+  opportunityDelta   Float
+  adjustmentPoints   Float    // e.g. +12.0 or -4.0
+  explainableReason  String
+  createdAt          DateTime @default(now())
+}
+
+model RoutePlan {
+  id                 String   @id @default(uuid())
+  jobId              String   @unique
+  job                Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  originLat          Float
+  originLng          Float
+  destLat            Float
+  destLng            Float
+  distanceKm         Float
+  estimatedMinutes   Int
+  checkpointsJson    String   @default("[]") // GeoJSON array
+  currentStep        Int      @default(1)    // 1 to 5
+}
+
+// =========================================================================
+// 5. HUMAN WELLBEING & WORKER PROTECTION
+// =========================================================================
+
+enum WellbeingTier {
+  HEALTHY
+  MONITOR
+  AT_RISK
+  CRITICAL
+}
+
+model WellbeingRecord {
+  id                 String        @id @default(uuid())
+  workerProfileId    String        @unique
+  workerProfile      WorkerProfile @relation(fields: [workerProfileId], references: [id], onDelete: Cascade)
+  hoursToday         Float         @default(0.0)
+  hoursWeek          Float         @default(0.0)
+  consecutiveDays    Int           @default(1)
+  lateNightTrips     Int           @default(0)
+  tier               WellbeingTier @default(HEALTHY)
+  wellbeingScore     Float         @default(95.0)
+  restShieldActive   Boolean       @default(false)
+  updatedAt          DateTime      @updatedAt
+
+  alerts             WellbeingAlert[]
+}
+
+model WellbeingAlert {
+  id                 String          @id @default(uuid())
+  wellbeingRecordId  String
+  wellbeingRecord    WellbeingRecord @relation(fields: [wellbeingRecordId], references: [id], onDelete: Cascade)
+  triggerReason      String
+  tier               WellbeingTier
+  actionTaken        String          // e.g. "Workload reduced by -8 points", "Rest shield engaged"
+  welfareNotified    Boolean         @default(false)
+  createdAt          DateTime        @default(now())
+}
+
+// =========================================================================
+// 6. PAYMENTS & TAMPER-EVIDENT HASH-CHAIN FINANCIAL LEDGER
+// =========================================================================
+
+enum PaymentStatus {
+  PENDING
+  ESCROWED
+  SETTLED
+  REFUNDED
+}
+
+enum PaymentMethod {
+  UPI
+  CARD
+  COOP_WALLET
+}
+
+model Payment {
+  id                 String        @id @default(uuid())
+  jobId              String        @unique
+  job                Job           @relation(fields: [jobId], references: [id])
+  customerId         String
+  customer           CustomerProfile @relation(fields: [customerId], references: [id])
+  amount             Float
+  currency           String        @default("INR")
+  status             PaymentStatus @default(ESCROWED)
+  method             PaymentMethod @default(UPI)
+  gatewayReference   String?
+  paidAt             DateTime?
+  createdAt          DateTime      @default(now())
+}
+
+// Cryptographic Hash-Chain Ledger:
+// CurrentHash = SHA-256(previousHash + sequenceNumber + timestamp + amount + splitBreakdownJson)
+model LedgerEntry {
+  id                 String       @id @default(uuid())
+  sequenceNumber     Int          @unique
+  jobId              String?
+  job                Job?         @relation(fields: [jobId], references: [id])
+  cooperativeId      String?
+  cooperative        Cooperative? @relation(fields: [cooperativeId], references: [id])
+  entryType          String       // SERVICE_SETTLEMENT, WELFARE_DISBURSEMENT, SURPLUS_ALLOCATION, DIVIDEND_PAYOUT
+  description        String
+  grossAmount        Float
+  currency           String       @default("INR")
+
+  // Transparent 6-way Split
+  workerShare        Float        // Direct labor pay
+  coopShare          Float        // Cooperative sustenance
+  welfareShare       Float        // 5% Mutual Aid & Healthcare Pool
+  trainingShare      Float        // Skill training & apprentice pool
+  operationsShare    Float        // Platform hosting & decentralization
+  capitalReserveShare Float       // Emergency capital reserve
+
+  // Cryptographic Hash-Chain
+  previousHash       String       // Genesis has "0000000000000000000000000000000000000000000000000000000000000000"
+  currentHash        String       // SHA-256 hash of this record
+  isTamperEvident    Boolean      @default(true)
+  timestamp          DateTime     @default(now())
+}
+
+model Feedback {
+  id                 String          @id @default(uuid())
+  jobId              String          @unique
+  job                Job             @relation(fields: [jobId], references: [id])
+  customerId         String
+  customer           CustomerProfile @relation(fields: [customerId], references: [id])
+  workerProfileId    String
+  workerProfile      WorkerProfile   @relation(fields: [workerProfileId], references: [id])
+  workmanshipRating  Int             // 1 - 5
+  professionalismRating Int          // 1 - 5
+  punctualityRating  Int             // 1 - 5
+  safetyRating       Int             // 1 - 5
+  overallRating      Int             // 1 - 5
+  comment            String?
+  createdAt          DateTime        @default(now())
+}
+
+// =========================================================================
+// 7. DEMOCRATIC GOVERNANCE & MUTUAL AID WELFARE
+// =========================================================================
+
+enum ProposalStatus {
+  DRAFT
+  VOTING_ACTIVE
+  PASSED
+  REJECTED
+  EXECUTED
+}
+
+model Proposal {
+  id                 String         @id @default(uuid())
+  cooperativeId      String
+  cooperative        Cooperative    @relation(fields: [cooperativeId], references: [id])
+  title              String
+  description        String
+  category           String
+  status             ProposalStatus @default(VOTING_ACTIVE)
+  votingDeadline     DateTime
+  quorumPercentage   Float          @default(60.0)
+  totalEligibleVotes Int
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+
+  simulations        ProposalSimulation[]
+  votes              Vote[]
+}
+
+// Constitutional AI: AI Explains, Workers Decide
+model ProposalSimulation {
+  id                 String   @id @default(uuid())
+  proposalId         String
+  proposal           Proposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  optionIdentifier   String   // Option A, B, C
+  optionTitle        String
+  investmentAmount   String
+  primaryBenefit     String
+  illustrativeImpact String
+  workerReach        String
+  identifiedTradeOffs String
+  createdAt          DateTime @default(now())
+}
+
+model Vote {
+  id                 String   @id @default(uuid())
+  proposalId         String
+  proposal           Proposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  userId             String
+  user               User     @relation(fields: [userId], references: [id])
+  voterDid           String
+  selectedOption     String
+  digitalSignature   String?
+  createdAt          DateTime @default(now())
+}
+
+enum WelfareStatus {
+  SUBMITTED
+  RULE_CHECKED
+  COMMITTEE_REVIEW
+  APPROVED_DISBURSED
+  REJECTED
+}
+
+model WelfareRequest {
+  id                 String         @id @default(uuid())
+  userId             String
+  user               User           @relation(fields: [userId], references: [id])
+  category           String         // Medical, Income Support, Tool Loss
+  amountRequested    Float
+  reason             String
+  status             WelfareStatus  @default(SUBMITTED)
+  ruleCheckResult    String?
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+
+  decision           WelfareDecision?
+}
+
+model WelfareDecision {
+  id                 String         @id @default(uuid())
+  welfareRequestId   String         @unique
+  welfareRequest     WelfareRequest @relation(fields: [welfareRequestId], references: [id], onDelete: Cascade)
+  cooperativeId      String
+  cooperative        Cooperative    @relation(fields: [cooperativeId], references: [id])
+  reviewerName       String
+  decision           String         // APPROVED, REJECTED
+  amountDisbursed    Float
+  disbursementTxnId  String?
+  decidedAt          DateTime       @default(now())
+}
+
+// =========================================================================
+// 8. CRISIS MOBILIZATION & MACRO INTELLIGENCE
+// =========================================================================
+
+enum CrisisLevel {
+  YELLOW_WATCH
+  ORANGE_WARNING
+  RED_ALERT
+}
+
+model CrisisEvent {
+  id                 String      @id @default(uuid())
+  eventName          String
+  eventType          String      // Cyclonic Flood, Heatwave, Grid Collapse
+  level              CrisisLevel @default(RED_ALERT)
+  isActive           Boolean     @default(true)
+  inflowSpikePct     Float
+  weatherSignal      String
+  declaredAt         DateTime    @default(now())
+  concludedAt        DateTime?
+
+  teams              CrisisTeam[]
+  deployments        CrisisDeployment[]
+}
+
+model CrisisTeam {
+  id                 String        @id @default(uuid())
+  crisisEventId      String
+  crisisEvent        CrisisEvent   @relation(fields: [crisisEventId], references: [id], onDelete: Cascade)
+  teamName           String        // High-Voltage Isolation, Hydro Barriers, etc.
+  tradeCategory      String
+  leadWorkerId       String
+  leadWorker         WorkerProfile @relation(fields: [leadWorkerId], references: [id])
+  deployedArtisans   Int
+  primaryMission     String
+}
+
+model CrisisDeployment {
+  id                 String      @id @default(uuid())
+  crisisEventId      String
+  crisisEvent        CrisisEvent @relation(fields: [crisisEventId], references: [id], onDelete: Cascade)
+  cooperativeId      String
+  cooperative        Cooperative @relation(fields: [cooperativeId], references: [id])
+  householdsReached  Int
+  hazardsSecured     Int
+  waterPumpsRestored Int
+  structuresShored   Int
+  totalCoopCost      Float
+  reimbursementStatus String     @default("SETTLED_VIA_EMERGENCY_POOL")
+  auditCertified     Boolean     @default(true)
+}
+
+model Training {
+  id                 String        @id @default(uuid())
+  cooperativeId      String
+  cooperative        Cooperative   @relation(fields: [cooperativeId], references: [id])
+  courseTitle        String
+  skillsCovered      String        // JSON array
+  instructorName     String
+  durationHours      Int
+  enrolledWorkers    WorkerProfile[]
+  createdAt          DateTime      @default(now())
+}
+
+model SkillGap {
+  id                 String        @id @default(uuid())
+  workerProfileId    String
+  workerProfile      WorkerProfile @relation(fields: [workerProfileId], references: [id])
+  identifiedShortage String
+  targetSector       String
+  potentialHourlyBoost Float
+  recommendedCourse  String
+  createdAt          DateTime      @default(now())
+}
+
+model DemandForecast {
+  id                 String   @id @default(uuid())
+  sectorName         String
+  chamberCode        String
+  predictedJobsNext24h Int
+  peakHour           String
+  confidence         Float
+  generatedAt        DateTime @default(now())
+}
+
+model DemandZone {
+  id                 String   @id @default(uuid())
+  zoneName           String
+  geoBoundaryJson    String   // GeoJSON polygon
+  activeRiskLevel    String   // LOW, ELEVATED, CRITICAL
+  activeWorkerCount  Int
+}
+
+model DigitalTwinScenario {
+  id                 String      @id @default(uuid())
+  cooperativeId      String
+  cooperative        Cooperative @relation(fields: [cooperativeId], references: [id])
+  scenarioName       String
+  simulatedCapacity  Float
+  stressTestResult   String
+  createdAt          DateTime    @default(now())
+}
+
+model GovernmentMetric {
+  id                 String                 @id @default(uuid())
+  govtOrgId          String
+  govtOrg            GovernmentOrganization @relation(fields: [govtOrgId], references: [id])
+  reportingPeriod    String
+  fairWageCompliance Float                  // Percentage
+  activeArtisansCount Int
+  totalWelfareDisbursed Float
+  safetyIncidentRate Float
+  recordedAt         DateTime               @default(now())
+}
+
+model ImpactMetric {
+  id                 String                 @id @default(uuid())
+  govtOrgId          String
+  govtOrg            GovernmentOrganization @relation(fields: [govtOrgId], references: [id])
+  giniCoefficient    Float
+  concentrationRatio Float
+  coopEquityStatus   String
+  recordedAt         DateTime               @default(now())
+}
+
+model Notification {
+  id                 String   @id @default(uuid())
+  userId             String
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title              String
+  message            String
+  type               String   // DISPATCH, SAFETY, WELFARE, GOVERNANCE
+  isRead             Boolean  @default(false)
+  createdAt          DateTime @default(now())
+}
+
+model AuditLog {
+  id                 String   @id @default(uuid())
+  userId             String?
+  user               User?    @relation(fields: [userId], references: [id])
+  action             String   // e.g. "AUTH_LOGIN", "DISPATCH_MUTATED", "VOTE_CAST"
+  resourceType       String
+  resourceId         String?
+  ipAddress          String?
+  userAgent          String?
+  payloadHash        String?  // SHA-256
+  createdAt          DateTime @default(now())
+}

@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>UNIVO - Cooperative Intelligence Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-container-highest": "#353436",
+                      "error": "#ffb4ab",
+                      "tertiary-container": "#ca8100",
+                      "surface-container-lowest": "#0e0e0f",
+                      "secondary": "#4edea3",
+                      "on-tertiary": "#472a00",
+                      "surface": "#131314",
+                      "on-secondary-container": "#00311f",
+                      "on-primary-fixed-variant": "#004395",
+                      "surface-tint": "#adc6ff",
+                      "on-tertiary-container": "#3e2400",
+                      "inverse-on-surface": "#313031",
+                      "error-container": "#93000a",
+                      "primary": "#adc6ff",
+                      "on-background": "#e5e2e3",
+                      "on-error-container": "#ffdad6",
+                      "surface-bright": "#3a393a",
+                      "on-tertiary-fixed-variant": "#653e00",
+                      "on-error": "#690005",
+                      "background": "#131314",
+                      "surface-container": "#201f20",
+                      "on-secondary": "#003824",
+                      "on-surface-variant": "#c2c6d6",
+                      "secondary-fixed": "#6ffbbe",
+                      "on-secondary-fixed": "#002113",
+                      "primary-fixed-dim": "#adc6ff",
+                      "secondary-container": "#00a572",
+                      "outline-variant": "#424754",
+                      "tertiary-fixed-dim": "#ffb95f",
+                      "inverse-surface": "#e5e2e3",
+                      "surface-dim": "#131314",
+                      "on-tertiary-fixed": "#2a1700",
+                      "on-secondary-fixed-variant": "#005236",
+                      "surface-container-high": "#2a2a2b",
+                      "secondary-fixed-dim": "#4edea3",
+                      "tertiary": "#ffb95f",
+                      "on-surface": "#e5e2e3",
+                      "tertiary-fixed": "#ffddb8",
+                      "surface-variant": "#353436",
+                      "primary-fixed": "#d8e2ff",
+                      "surface-container-low": "#1c1b1c",
+                      "on-primary-container": "#00285d",
+                      "on-primary": "#002e6a",
+                      "on-primary-fixed": "#001a42",
+                      "inverse-primary": "#005ac2",
+                      "primary-container": "#4d8eff",
+                      "outline": "#8c909f"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "margin-mobile": "16px",
+                      "margin-desktop": "64px",
+                      "container-max": "1440px",
+                      "gutter": "24px",
+                      "base": "8px"
+              },
+              "fontFamily": {
+                      "display-lg": [
+                              "Geist", "sans-serif"
+                      ],
+                      "headline-lg-mobile": [
+                              "Geist", "sans-serif"
+                      ],
+                      "body-md": [
+                              "Geist", "sans-serif"
+                      ],
+                      "headline-lg": [
+                              "Geist", "sans-serif"
+                      ],
+                      "data-mono": [
+                              "jetbrainsMono", "monospace"
+                      ],
+                      "label-caps": [
+                              "jetbrainsMono", "monospace"
+                      ]
+              },
+              "fontSize": {
+                      "display-lg": [
+                              "72px",
+                              {
+                                      "lineHeight": "80px",
+                                      "letterSpacing": "-0.04em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "32px",
+                              {
+                                      "lineHeight": "38px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg": [
+                              "40px",
+                              {
+                                      "lineHeight": "48px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "data-mono": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "letterSpacing": "0.02em",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-caps": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.1em",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        /* Film Grain Overlay */
+        .film-grain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* Glassmorphic Utilities */
+        .glass-panel {
+            background: rgba(19, 19, 20, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(19, 19, 20, 0.1); 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(140, 144, 159, 0.2); 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(140, 144, 159, 0.4); 
+        }
+
+        /* Ambient Glow */
+        .glow-primary {
+            box-shadow: 0 0 20px 0 rgba(173, 198, 255, 0.1);
+        }
+        .glow-secondary {
+            box-shadow: 0 0 20px 0 rgba(78, 222, 163, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md min-h-screen overflow-x-hidden selection:bg-primary-container selection:text-on-primary-container">
+<div class="film-grain"></div>
+<!-- Background Ambient Glows -->
+<div class="fixed top-0 left-0 w-1/3 h-1/3 bg-primary/5 rounded-full blur-[120px] pointer-events-none"></div>
+<div class="fixed bottom-0 right-0 w-1/3 h-1/3 bg-secondary/5 rounded-full blur-[120px] pointer-events-none"></div>
+<!-- SideNavBar -->
+<nav class="hidden md:flex h-screen w-64 fixed left-0 top-0 bg-surface/80 dark:bg-surface/80 text-primary dark:text-primary font-body-md text-body-md backdrop-blur-xl border-r border-white/10 shadow-none flex-col py-8 px-4 z-50">
+<div class="mb-10 px-4">
+<div class="flex items-center gap-3">
+<img alt="Cooperative Manager Profile" class="w-10 h-10 rounded-full object-cover border border-white/10" data-alt="A small, stylized circular avatar representing an Ops Commander in a high-tech corporate environment. Dark background, glowing blue and silver accents, minimalist and professional." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZHrkInDw8isw7s1kE0bC6a-jHZHt6DSU-8mIQPLWqGeYXWZsU-BP87YzKL_ZnFqUDUTvA4QZAi3lzR3HW1ls8yNhmiCR9cl6guPOLiAMt9-TBGIm2E-3o6uegzftOdTsX1yYOiVjGvxFkXeeotJkx3ul4ZK7U7Yn_C_sLZXYTszMc2zkmLRmlr7L2FdKUD5tpfXdgu9BaUkrgNjzTWFzWMyJELVNIXlxqIDb6bk-GVqmMrRLQ"/>
+<div>
+<h1 class="font-display-lg text-headline-lg-mobile font-bold text-primary tracking-tighter leading-none">Aetheris Corp</h1>
+<p class="font-data-mono text-label-caps text-on-surface-variant mt-1">Ops Commander</p>
+</div>
+</div>
+</div>
+<ul class="flex flex-col gap-2 flex-grow">
+<!-- Active Tab -->
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-primary font-bold border-r-2 border-primary bg-primary/5 active:scale-95 transition-transform hover:bg-white/5 hover:text-on-surface transition-all duration-300" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+                    Dashboard
+                </a>
+</li>
+<!-- Inactive Tabs -->
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant font-medium active:scale-95 transition-transform hover:bg-white/5 hover:text-on-surface transition-all duration-300" href="#">
+<span class="material-symbols-outlined">hub</span>
+                    Network Health
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant font-medium active:scale-95 transition-transform hover:bg-white/5 hover:text-on-surface transition-all duration-300" href="#">
+<span class="material-symbols-outlined">trending_up</span>
+                    Demand Forecast
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant font-medium active:scale-95 transition-transform hover:bg-white/5 hover:text-on-surface transition-all duration-300" href="#">
+<span class="material-symbols-outlined">neurology</span>
+                    Wellbeing
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant font-medium active:scale-95 transition-transform hover:bg-white/5 hover:text-on-surface transition-all duration-300" href="#">
+<span class="material-symbols-outlined">gavel</span>
+                    Governance
+                </a>
+</li>
+</ul>
+<div class="mt-auto mb-6 px-4">
+<button class="w-full bg-primary text-on-primary font-body-md font-medium py-3 rounded-lg hover:bg-primary-fixed transition-colors active:scale-95 flex items-center justify-center gap-2 glow-primary">
+<span class="material-symbols-outlined">bolt</span>
+                Quick Action
+            </button>
+</div>
+<ul class="flex flex-col gap-2">
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant font-medium active:scale-95 transition-transform hover:bg-white/5 hover:text-on-surface transition-all duration-300" href="#">
+<span class="material-symbols-outlined">settings</span>
+                    Settings
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant font-medium active:scale-95 transition-transform hover:bg-white/5 hover:text-on-surface transition-all duration-300" href="#">
+<span class="material-symbols-outlined">help_center</span>
+                    Support
+                </a>
+</li>
+</ul>
+</nav>
+<!-- TopAppBar -->
+<header class="hidden md:flex fixed top-0 right-0 w-[calc(100%-16rem)] z-40 bg-surface/60 dark:bg-surface/60 text-primary dark:text-primary font-body-md text-body-md backdrop-blur-md border-b border-white/5 shadow-none justify-between items-center px-margin-desktop h-20 transition-all">
+<div class="flex items-center">
+<h2 class="font-headline-lg text-headline-lg font-black text-on-surface">Command Center</h2>
+</div>
+<div class="flex items-center gap-6">
+<!-- Search -->
+<div class="relative group focus-within:ring-1 focus-within:ring-primary/50 rounded-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant group-focus-within:text-primary transition-colors">search</span>
+<input class="bg-surface-container-high/50 border border-white/10 text-on-surface font-body-md rounded-full pl-10 pr-4 py-2 w-64 focus:outline-none focus:border-primary/50 focus:bg-surface-container transition-all" placeholder="Search parameters..." type="text"/>
+</div>
+<!-- Actions -->
+<div class="flex items-center gap-2">
+<button class="p-2 text-on-surface-variant hover:bg-primary/10 rounded-full transition-colors relative group">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-secondary rounded-full border-2 border-surface group-hover:border-surface-container transition-colors"></span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-primary/10 rounded-full transition-colors">
+<span class="material-symbols-outlined">sensors</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-primary/10 rounded-full transition-colors">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-24 md:pl-64 min-h-screen px-margin-mobile md:px-margin-desktop pb-margin-desktop">
+<div class="max-w-container-max mx-auto">
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter auto-rows-[minmax(200px,auto)]">
+<!-- 1. Network Health (Hero Span) -->
+<div class="md:col-span-8 glass-panel rounded-xl p-6 relative overflow-hidden group hover:border-primary/30 transition-colors duration-500 min-h-[400px] flex flex-col justify-between">
+<div class="absolute inset-0 z-0 opacity-20 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/20 via-surface to-surface pointer-events-none"></div>
+<div class="relative z-10 flex justify-between items-start mb-4">
+<div>
+<h3 class="font-body-md text-on-surface font-semibold flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm">hub</span>
+                                Network Health
+                            </h3>
+<p class="font-data-mono text-label-caps text-on-surface-variant mt-1">REAL-TIME NODE TOPOLOGY</p>
+</div>
+<div class="bg-primary/10 px-3 py-1 rounded border border-primary/20 flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="font-data-mono text-primary text-sm">ACTIVE</span>
+</div>
+</div>
+<!-- Simulated Visualization Area -->
+<div class="relative w-full h-48 my-4 flex items-center justify-center">
+<svg class="w-full h-full" preserveaspectratio="xMidYMid slice" viewbox="0 0 400 200">
+<defs>
+<radialgradient cx="50%" cy="50%" id="nodeGlow" r="50%">
+<stop offset="0%" stop-color="#adc6ff" stop-opacity="0.8"></stop>
+<stop offset="100%" stop-color="#adc6ff" stop-opacity="0"></stop>
+</radialgradient>
+</defs>
+<!-- Connections -->
+<path class="animate-pulse" d="M 50 100 Q 150 50, 200 100 T 350 100" fill="none" stroke="rgba(173, 198, 255, 0.2)" stroke-width="1"></path>
+<path d="M 100 150 Q 200 180, 250 120 T 380 150" fill="none" stroke="rgba(173, 198, 255, 0.1)" stroke-width="1"></path>
+<path d="M 80 50 Q 250 20, 300 80" fill="none" stroke="rgba(173, 198, 255, 0.15)" stroke-dasharray="4 4" stroke-width="1"></path>
+<!-- Nodes -->
+<circle cx="50" cy="100" fill="#adc6ff" r="4"></circle>
+<circle class="animate-pulse" cx="50" cy="100" fill="url(#nodeGlow)" r="12"></circle>
+<circle cx="200" cy="100" fill="#adc6ff" r="6"></circle>
+<circle cx="200" cy="100" fill="url(#nodeGlow)" r="16"></circle>
+<circle cx="350" cy="100" fill="#adc6ff" r="3"></circle>
+<circle cx="100" cy="150" fill="#adc6ff" r="4"></circle>
+<circle cx="250" cy="120" fill="#adc6ff" r="5"></circle>
+<circle cx="380" cy="150" fill="#adc6ff" r="3"></circle>
+<circle cx="80" cy="50" fill="#adc6ff" r="3"></circle>
+<circle cx="300" cy="80" fill="#adc6ff" r="4"></circle>
+</svg>
+</div>
+<div class="relative z-10 grid grid-cols-3 gap-4 border-t border-white/5 pt-4">
+<div>
+<p class="font-data-mono text-label-caps text-on-surface-variant">ACTIVE NODES</p>
+<p class="font-display-lg text-headline-lg-mobile text-on-surface mt-1">4,821</p>
+</div>
+<div>
+<p class="font-data-mono text-label-caps text-on-surface-variant">THROUGHPUT</p>
+<p class="font-display-lg text-headline-lg-mobile text-on-surface mt-1">94<span class="text-lg text-on-surface-variant">TB/s</span></p>
+</div>
+<div>
+<p class="font-data-mono text-label-caps text-on-surface-variant">LATENCY</p>
+<p class="font-display-lg text-headline-lg-mobile text-on-surface mt-1">12<span class="text-lg text-on-surface-variant">ms</span></p>
+</div>
+</div>
+</div>
+<!-- 3. Worker Wellbeing Index -->
+<div class="md:col-span-4 glass-panel rounded-xl p-6 relative group hover:border-secondary/30 transition-colors duration-500 flex flex-col">
+<div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-secondary" style="font-size: 48px;">neurology</span>
+</div>
+<h3 class="font-body-md text-on-surface font-semibold flex items-center gap-2 relative z-10">
+<span class="material-symbols-outlined text-secondary text-sm">vital_signs</span>
+                        Wellbeing Index
+                    </h3>
+<p class="font-data-mono text-label-caps text-on-surface-variant mt-1 mb-6 relative z-10">AGGREGATE WORKFORCE METRICS</p>
+<div class="flex-grow flex items-center justify-center relative">
+<!-- Simulated Radial Chart -->
+<div class="relative w-40 h-40 flex items-center justify-center">
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 100 100">
+<circle cx="50" cy="50" fill="none" r="45" stroke="rgba(255,255,255,0.05)" stroke-width="8"></circle>
+<circle class="glow-secondary transition-all duration-1000 ease-out" cx="50" cy="50" fill="none" r="45" stroke="#4edea3" stroke-dasharray="282.7" stroke-dashoffset="33.9" stroke-width="8"></circle> <!-- 88% of 282.7 -->
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+<span class="font-display-lg text-headline-lg text-secondary">88%</span>
+<span class="font-data-mono text-label-caps text-on-surface-variant">NOMINAL</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 mt-6 border-t border-white/5 pt-4 relative z-10">
+<div>
+<div class="flex justify-between items-center mb-1">
+<span class="font-data-mono text-label-caps text-on-surface-variant">HEALTH</span>
+<span class="font-data-mono text-sm text-on-surface">92%</span>
+</div>
+<div class="h-1 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-secondary w-[92%]"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between items-center mb-1">
+<span class="font-data-mono text-label-caps text-on-surface-variant">TRUST</span>
+<span class="font-data-mono text-sm text-on-surface">84%</span>
+</div>
+<div class="h-1 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-secondary w-[84%] opacity-70"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- 2. Demand Forecast -->
+<div class="md:col-span-6 glass-panel rounded-xl p-6 flex flex-col justify-between hover:border-primary/20 transition-colors duration-500">
+<div>
+<h3 class="font-body-md text-on-surface font-semibold flex items-center gap-2">
+<span class="material-symbols-outlined text-on-surface-variant text-sm">bar_chart</span>
+                            Demand Forecast
+                        </h3>
+<p class="font-data-mono text-label-caps text-on-surface-variant mt-1">7-DAY PREDICTIVE MODEL</p>
+</div>
+<!-- Simulated Area Chart -->
+<div class="h-40 w-full mt-6 relative flex items-end">
+<!-- Grid Lines -->
+<div class="absolute inset-0 flex flex-col justify-between pointer-events-none">
+<div class="border-b border-white/5 w-full h-0"></div>
+<div class="border-b border-white/5 w-full h-0"></div>
+<div class="border-b border-white/5 w-full h-0"></div>
+<div class="border-b border-white/5 w-full h-0"></div>
+</div>
+<!-- Chart SVG -->
+<svg class="w-full h-full relative z-10" preserveaspectratio="none" viewbox="0 0 100 100">
+<defs>
+<lineargradient id="chartGradient" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#adc6ff" stop-opacity="0.3"></stop>
+<stop offset="100%" stop-color="#adc6ff" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+<path d="M 0 100 L 0 70 L 20 60 L 40 80 L 60 40 L 80 50 L 100 20 L 100 100 Z" fill="url(#chartGradient)"></path>
+<path d="M 0 70 L 20 60 L 40 80 L 60 40 L 80 50 L 100 20" fill="none" stroke="#adc6ff" stroke-width="2"></path>
+<!-- Data points -->
+<circle cx="20" cy="60" fill="#131314" r="3" stroke="#adc6ff" stroke-width="1.5"></circle>
+<circle cx="60" cy="40" fill="#131314" r="3" stroke="#adc6ff" stroke-width="1.5"></circle>
+<circle cx="100" cy="20" fill="#adc6ff" r="3"></circle>
+</svg>
+</div>
+<div class="flex justify-between items-center mt-4 border-t border-white/5 pt-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-sm">trending_up</span>
+<span class="font-data-mono text-sm text-secondary">+14.2% expected</span>
+</div>
+<span class="font-data-mono text-label-caps text-on-surface-variant">PEAK: THURSDAY</span>
+</div>
+</div>
+<!-- 4. Governance & Alerts -->
+<div class="md:col-span-6 glass-panel rounded-xl p-6 flex flex-col hover:border-tertiary-fixed-dim/30 transition-colors duration-500">
+<div class="flex justify-between items-start mb-6">
+<div>
+<h3 class="font-body-md text-on-surface font-semibold flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary-fixed-dim text-sm">gavel</span>
+                                Governance &amp; Alerts
+                            </h3>
+<p class="font-data-mono text-label-caps text-on-surface-variant mt-1">PROTOCOLS &amp; NOTIFICATIONS</p>
+</div>
+<div class="bg-tertiary-container/20 px-3 py-1 rounded border border-tertiary-fixed-dim/20 text-tertiary-fixed-dim font-data-mono text-sm">
+                            3 PENDING
+                        </div>
+</div>
+<div class="flex flex-col gap-3 flex-grow overflow-y-auto pr-2">
+<!-- Alert Item -->
+<div class="bg-surface-container-high/40 rounded-lg p-3 border border-white/5 flex items-start gap-3 hover:bg-surface-container-high/60 transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-tertiary-fixed-dim mt-0.5" style="font-size: 20px;">how_to_vote</span>
+<div class="flex-grow">
+<p class="font-body-md text-sm text-on-surface font-medium">Protocol Update 2.4a</p>
+<p class="font-data-mono text-xs text-on-surface-variant mt-1">Vote closes in 04:22:10</p>
+</div>
+<button class="text-primary hover:text-primary-fixed transition-colors">
+<span class="material-symbols-outlined" style="font-size: 20px;">arrow_forward</span>
+</button>
+</div>
+<!-- Alert Item -->
+<div class="bg-error/5 rounded-lg p-3 border border-error/20 flex items-start gap-3 hover:bg-error/10 transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-error mt-0.5" style="font-size: 20px;">warning</span>
+<div class="flex-grow">
+<p class="font-body-md text-sm text-on-surface font-medium">Node Sync Anomaly detected</p>
+<p class="font-data-mono text-xs text-on-surface-variant mt-1">Sector 7 - Subnet B</p>
+</div>
+<span class="font-data-mono text-xs text-error">HIGH</span>
+</div>
+<!-- Alert Item -->
+<div class="bg-surface-container-high/40 rounded-lg p-3 border border-white/5 flex items-start gap-3 hover:bg-surface-container-high/60 transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-secondary mt-0.5" style="font-size: 20px;">verified</span>
+<div class="flex-grow">
+<p class="font-body-md text-sm text-on-surface font-medium">Compliance Audit Passed</p>
+<p class="font-data-mono text-xs text-on-surface-variant mt-1">Q3 Ecological Standards</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

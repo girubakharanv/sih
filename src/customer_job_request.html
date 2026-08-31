@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>UNIVO Customer Job Request</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&amp;family=Geist:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        @keyframes fade-in-up {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in-up {
+            animation: fade-in-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .delay-100 { animation-delay: 100ms; }
+        .delay-200 { animation-delay: 200ms; }
+        .delay-300 { animation-delay: 300ms; }
+        .delay-400 { animation-delay: 400ms; }
+
+        .glass-panel {
+            background: rgba(28, 27, 28, 0.2);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .glass-input {
+            background: rgba(28, 27, 28, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .glass-input:focus {
+            border-color: rgba(173, 198, 255, 0.5);
+            box-shadow: 0 0 15px rgba(173, 198, 255, 0.2);
+            outline: none;
+        }
+
+        .btn-glow {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .btn-glow:hover {
+            box-shadow: 0 0 20px rgba(173, 198, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* Terminal scrollbar */
+        .terminal-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+        .terminal-scroll::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.1);
+        }
+        .terminal-scroll::-webkit-scrollbar-thumb {
+            background: rgba(173, 198, 255, 0.3);
+            border-radius: 2px;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        .cursor-blink {
+            animation: blink 1s step-end infinite;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "inverse-primary": "#005ac2",
+                      "on-surface": "#e5e2e3",
+                      "secondary-fixed": "#6ffbbe",
+                      "surface-container-high": "#2a2a2b",
+                      "surface-container-lowest": "#0e0e0f",
+                      "error-container": "#93000a",
+                      "surface-bright": "#3a393a",
+                      "surface-variant": "#353436",
+                      "on-secondary": "#003824",
+                      "background": "#131314",
+                      "on-secondary-fixed-variant": "#005236",
+                      "on-surface-variant": "#c2c6d6",
+                      "surface-container-low": "#1c1b1c",
+                      "surface-container": "#201f20",
+                      "tertiary": "#ffb95f",
+                      "on-tertiary-fixed": "#2a1700",
+                      "outline-variant": "#424754",
+                      "on-secondary-container": "#00311f",
+                      "surface": "#131314",
+                      "surface-dim": "#131314",
+                      "on-secondary-fixed": "#002113",
+                      "on-tertiary-fixed-variant": "#653e00",
+                      "on-primary-fixed-variant": "#004395",
+                      "primary-fixed-dim": "#adc6ff",
+                      "on-primary": "#002e6a",
+                      "surface-container-highest": "#353436",
+                      "on-primary-container": "#00285d",
+                      "tertiary-fixed": "#ffddb8",
+                      "on-error": "#690005",
+                      "on-error-container": "#ffdad6",
+                      "tertiary-container": "#ca8100",
+                      "secondary-fixed-dim": "#4edea3",
+                      "surface-tint": "#adc6ff",
+                      "tertiary-fixed-dim": "#ffb95f",
+                      "error": "#ffb4ab",
+                      "primary-fixed": "#d8e2ff",
+                      "on-tertiary-container": "#3e2400",
+                      "primary": "#adc6ff",
+                      "on-background": "#e5e2e3",
+                      "inverse-on-surface": "#313031",
+                      "outline": "#8c909f",
+                      "secondary-container": "#00a572",
+                      "on-tertiary": "#472a00",
+                      "inverse-surface": "#e5e2e3",
+                      "on-primary-fixed": "#001a42",
+                      "secondary": "#4edea3",
+                      "primary-container": "#4d8eff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "margin-mobile": "16px",
+                      "gutter": "24px",
+                      "container-max": "1440px",
+                      "margin-desktop": "64px",
+                      "base": "8px"
+              },
+              "fontFamily": {
+                      "data-mono": [
+                              "jetbrainsMono", "monospace"
+                      ],
+                      "body-md": [
+                              "Geist", "sans-serif"
+                      ],
+                      "display-lg": [
+                              "Geist", "sans-serif"
+                      ],
+                      "headline-lg": [
+                              "Geist", "sans-serif"
+                      ],
+                      "headline-lg-mobile": [
+                              "Geist", "sans-serif"
+                      ],
+                      "label-caps": [
+                              "jetbrainsMono", "monospace"
+                      ]
+              },
+              "fontSize": {
+                      "data-mono": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "letterSpacing": "0.02em",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "display-lg": [
+                              "72px",
+                              {
+                                      "lineHeight": "80px",
+                                      "letterSpacing": "-0.04em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-lg": [
+                              "40px",
+                              {
+                                      "lineHeight": "48px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "32px",
+                              {
+                                      "lineHeight": "38px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-caps": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.1em",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+            }
+          }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen overflow-hidden selection:bg-primary selection:text-on-primary">
+<!-- Background Layer: WebGL Shader -->
+<div class="fixed inset-0 z-0 pointer-events-none">
+<!-- STITCH_SHADER_START:ANIMATION_4 class="absolute inset-0 w-full h-full opacity-60" -->
+<div class="absolute inset-0 w-full h-full opacity-60" style="display:block;">
+<canvas id="shader-canvas-ANIMATION_4" style="display:block;width:100%;height:100%"></canvas>
+<script>
+(function() {
+  const canvas = document.getElementById('shader-canvas-ANIMATION_4');
+
+  // Sync the WebGL drawing-buffer size with the CSS-driven layout size.
+  // This fires on initial layout and whenever the element is resized.
+  function syncSize() {
+    const w = canvas.clientWidth  || 1280;
+    const h = canvas.clientHeight || 720;
+    if (canvas.width !== w || canvas.height !== h) {
+      canvas.width  = w;
+      canvas.height = h;
+    }
+  }
+  if (typeof ResizeObserver !== 'undefined') {
+    new ResizeObserver(syncSize).observe(canvas);
+  }
+  syncSize();
+
+  const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+  if (!gl) return;
+  const vs = `attribute vec2 a_position;
+varying vec2 v_texCoord;
+void main() {
+  v_texCoord = a_position * 0.5 + 0.5;
+  gl_Position = vec4(a_position, 0.0, 1.0);
+}`;
+  const fs = `precision highp float;
+uniform float u_time;
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+varying vec2 v_texCoord;
+
+void main() {
+    vec2 uv = v_texCoord;
+    vec2 p = uv * 2.0 - 1.0;
+    p.x *= u_resolution.x / u_resolution.y;
+
+    // Moving noise/nebula effect
+    float t = u_time * 0.2;
+    vec3 color = vec3(0.05, 0.05, 0.07); // Base dark Obsidian
+    
+    for(float i = 1.0; i < 4.0; i++) {
+        p.x += 0.3 / i * sin(i * 3.0 * p.y + t + u_mouse.x / u_resolution.x);
+        p.y += 0.3 / i * cos(i * 3.0 * p.x + t + u_mouse.y / u_resolution.y);
+    }
+    
+    float strength = 0.5 / length(p);
+    color += vec3(0.2, 0.4, 0.8) * strength * 0.2; // Intelligence Blue
+    
+    // Add subtle grain
+    float grain = fract(sin(dot(uv, vec2(12.9898, 78.233))) * 43758.5453);
+    color += (grain - 0.5) * 0.02;
+
+    gl_FragColor = vec4(color, 1.0);
+}`;
+  function cs(type, src) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    return s;
+  }
+  const prog = gl.createProgram();
+  gl.attachShader(prog, cs(gl.VERTEX_SHADER, vs));
+  gl.attachShader(prog, cs(gl.FRAGMENT_SHADER, fs));
+  gl.linkProgram(prog);
+  gl.useProgram(prog);
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+  const pos = gl.getAttribLocation(prog, 'a_position');
+  gl.enableVertexAttribArray(pos);
+  gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
+  const uTime = gl.getUniformLocation(prog, 'u_time');
+  const uRes = gl.getUniformLocation(prog, 'u_resolution');
+  const uMouse = gl.getUniformLocation(prog, 'u_mouse');
+
+  // u_mouse is in pixel coordinates matching u_resolution (ShaderToy convention).
+  // Shaders that need normalized coords should use: u_mouse / u_resolution.
+  let mouse = { x: canvas.width / 2, y: canvas.height / 2 };
+  window.addEventListener('mousemove', (event) => {
+    const rect = canvas.getBoundingClientRect();
+    if (rect.width && rect.height) {
+      const nx = (event.clientX - rect.left) / rect.width;
+      const ny = 1.0 - (event.clientY - rect.top) / rect.height;
+      mouse.x = nx * canvas.width;
+      mouse.y = ny * canvas.height;
+    }
+  });
+
+  function render(t) {
+    if (typeof ResizeObserver === 'undefined') syncSize();
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    if (uTime) gl.uniform1f(uTime, t * 0.001);
+    if (uRes) gl.uniform2f(uRes, canvas.width, canvas.height);
+    if (uMouse) gl.uniform2f(uMouse, mouse.x, mouse.y);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    requestAnimationFrame(render);
+  }
+  render(0);
+})();
+</script>
+</div>
+<!-- STITCH_SHADER_END:ANIMATION_4 -->
+<!-- Film grain overlay -->
+<div class="absolute inset-0 mix-blend-overlay opacity-[0.03]" style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E');"></div>
+</div>
+<!-- Background Layer: 3D Foreground (Right Side) -->
+<div class="fixed inset-y-0 right-0 w-1/2 z-0 pointer-events-none hidden md:block">
+<!-- STITCH_THREEJS_START:ANIMATION_5 class="absolute inset-0 w-full h-full opacity-80 mix-blend-screen" -->
+<div class="absolute inset-0 w-full h-full opacity-80 mix-blend-screen" style="display:block;">
+<script src="https://ajax.googleapis.com/ajax/libs/threejs/r125/three.min.js"></script>
+<div id="threejs-container-ANIMATION_5" style="width:100%;height:100%"></div>
+<script>
+(function() {
+  const container = document.getElementById('threejs-container-ANIMATION_5');
+  const devicePixelRatio = window.devicePixelRatio || 1;
+  let scene, camera, renderer, prism;
+
+function init() {
+    scene = new THREE.Scene();
+    const width = container.clientWidth || window.innerWidth;
+    const height = container.clientHeight || window.innerHeight;
+    
+    camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+    camera.position.z = 5;
+
+    renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    renderer.setSize(width, height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    container.appendChild(renderer.domElement);
+
+    // Create a "Data Prism" - floating octahedron with wireframe
+    const geometry = new THREE.OctahedronGeometry(2, 0);
+    const material = new THREE.MeshPhongMaterial({
+        color: 0x3b82f6,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.6,
+        emissive: 0x1e40af,
+        emissiveIntensity: 0.5
+    });
+    
+    prism = new THREE.Mesh(geometry, material);
+    scene.add(prism);
+
+    const innerGeom = new THREE.OctahedronGeometry(1.8, 0);
+    const innerMat = new THREE.MeshPhongMaterial({
+        color: 0x3b82f6,
+        transparent: true,
+        opacity: 0.2
+    });
+    const innerPrism = new THREE.Mesh(innerGeom, innerMat);
+    prism.add(innerPrism);
+
+    const light = new THREE.PointLight(0xffffff, 1, 100);
+    light.position.set(10, 10, 10);
+    scene.add(light);
+
+    const ambientLight = new THREE.AmbientLight(0x404040);
+    scene.add(ambientLight);
+
+    animate();
+}
+
+function animate() {
+    requestAnimationFrame(animate);
+    if (prism) {
+        prism.rotation.y += 0.005;
+        prism.rotation.x += 0.003;
+        prism.position.y = Math.sin(Date.now() * 0.001) * 0.2;
+    }
+    renderer.render(scene, camera);
+}
+
+window.addEventListener('resize', () => {
+    const width = container.clientWidth || window.innerWidth;
+    const height = container.clientHeight || window.innerHeight;
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
+    renderer.setSize(width, height);
+});
+
+init();
+})();
+</script>
+</div>
+<!-- STITCH_THREEJS_END:ANIMATION_5 -->
+<!-- Gradient mask to blend left edge -->
+<div class="absolute inset-0 bg-gradient-to-r from-background via-transparent to-transparent"></div>
+</div>
+<!-- TopAppBar -->
+<nav class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-margin-desktop py-base bg-transparent backdrop-blur-md bg-surface/10 border-b border-white/10 hidden md:flex">
+<div class="font-display-lg text-display-lg font-bold tracking-tighter text-on-surface">UNIVO</div>
+<div class="flex items-center gap-8">
+<ul class="flex gap-6">
+<li><a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-300" href="#">Network</a></li>
+<li><a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-300" href="#">Intelligence</a></li>
+<li><a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-300" href="#">Logistics</a></li>
+<li><a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-300" href="#">Governance</a></li>
+</ul>
+<div class="flex items-center gap-4 border-l border-white/10 pl-6">
+<button class="text-on-surface-variant hover:text-primary transition-colors duration-300 flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">account_tree</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors duration-300 flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">notifications_active</span>
+</button>
+<button class="bg-primary/10 text-primary hover:bg-primary/20 transition-colors duration-300 px-4 py-2 rounded-full font-medium text-sm ml-2">Deploy Request</button>
+</div>
+</div>
+</nav>
+<!-- SideNavBar -->
+<nav class="fixed left-0 top-0 h-full flex flex-col z-40 py-margin-desktop docked left-0 h-screen w-64 backdrop-blur-xl bg-surface-container-low/20 border-r border-white/5 shadow-sm hidden md:flex pt-32">
+<div class="px-6 mb-8">
+<h2 class="font-label-caps text-label-caps text-tertiary mb-1">UNIVO Core</h2>
+<p class="font-data-mono text-data-mono text-on-surface-variant text-xs opacity-70">AI Readiness: 98.4%</p>
+</div>
+<ul class="flex-1 flex flex-col gap-2 px-3">
+<li>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant opacity-70 hover:bg-white/5 hover:opacity-100 transition-all font-data-mono text-data-mono group" href="#">
+<span class="material-symbols-outlined text-[18px] group-hover:text-primary transition-colors">sensors</span>
+                    System State
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-primary border-r-2 border-primary bg-primary/5 font-data-mono text-data-mono" href="#">
+<span class="material-symbols-outlined text-[18px]">psychology</span>
+                    Neural Feed
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant opacity-70 hover:bg-white/5 hover:opacity-100 transition-all font-data-mono text-data-mono group" href="#">
+<span class="material-symbols-outlined text-[18px] group-hover:text-primary transition-colors">hub</span>
+                    Active Nodes
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant opacity-70 hover:bg-white/5 hover:opacity-100 transition-all font-data-mono text-data-mono group" href="#">
+<span class="material-symbols-outlined text-[18px] group-hover:text-primary transition-colors">gavel</span>
+                    Compliance
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant opacity-70 hover:bg-white/5 hover:opacity-100 transition-all font-data-mono text-data-mono group" href="#">
+<span class="material-symbols-outlined text-[18px] group-hover:text-primary transition-colors">inventory_2</span>
+                    Archive
+                </a>
+</li>
+</ul>
+<div class="px-6 mb-6">
+<button class="w-full py-2 border border-primary/30 text-primary rounded-lg text-xs font-label-caps text-label-caps hover:bg-primary/10 transition-colors">Optimize Network</button>
+</div>
+<ul class="flex flex-col gap-2 px-3 mt-auto">
+<li>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant opacity-70 hover:bg-white/5 hover:opacity-100 transition-all font-data-mono text-data-mono text-sm group" href="#">
+<span class="material-symbols-outlined text-[16px]">help_center</span>
+                    Support
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant opacity-70 hover:bg-white/5 hover:opacity-100 transition-all font-data-mono text-data-mono text-sm group" href="#">
+<span class="material-symbols-outlined text-[16px]">settings</span>
+                    Settings
+                </a>
+</li>
+</ul>
+</nav>
+<!-- Main Content Canvas -->
+<main class="relative z-10 w-full min-h-screen pt-24 md:pt-32 px-margin-mobile md:pl-80 md:pr-margin-desktop pb-24 flex items-center justify-start">
+<div class="w-full max-w-2xl grid grid-cols-1 gap-6">
+<!-- Header -->
+<div class="animate-fade-in-up opacity-0">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary-container/10 border border-secondary-container/20 mb-4">
+<span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+<span class="font-data-mono text-[10px] text-secondary tracking-widest uppercase">System Ready</span>
+</div>
+<h1 class="font-headline-lg-mobile md:font-headline-lg text-on-surface mb-2">Job Request Protocol</h1>
+<p class="text-on-surface-variant max-w-md">Define the parameters for intelligence dispatch. The system will auto-calibrate resources based on your input.</p>
+</div>
+<!-- Form HUD -->
+<div class="glass-panel rounded-xl p-6 md:p-8 animate-fade-in-up delay-100 opacity-0 relative overflow-hidden">
+<!-- Decorative corner accents -->
+<div class="absolute top-0 left-0 w-4 h-4 border-t border-l border-primary/40 rounded-tl-xl"></div>
+<div class="absolute top-0 right-0 w-4 h-4 border-t border-r border-primary/40 rounded-tr-xl"></div>
+<div class="absolute bottom-0 left-0 w-4 h-4 border-b border-l border-primary/40 rounded-bl-xl"></div>
+<div class="absolute bottom-0 right-0 w-4 h-4 border-b border-r border-primary/40 rounded-br-xl"></div>
+<form class="space-y-6">
+<!-- Task Description -->
+<div class="space-y-2">
+<label class="block font-label-caps text-label-caps text-on-surface-variant flex justify-between">
+<span>Task Description</span>
+<span class="text-primary/50 font-data-mono text-[10px]">REQ_PARAM_01</span>
+</label>
+<textarea class="w-full glass-input rounded-lg p-4 text-on-surface font-body-md placeholder:text-on-surface-variant/30 min-h-[120px] resize-none" placeholder="Describe the objective in detail..."></textarea>
+</div>
+<!-- Skills & Urgency Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-2">
+<label class="block font-label-caps text-label-caps text-on-surface-variant">Required Skills</label>
+<input class="w-full glass-input rounded-lg p-3 text-on-surface font-body-md placeholder:text-on-surface-variant/30" placeholder="e.g. Data Analysis, Logistics..." type="text"/>
+</div>
+<div class="space-y-2">
+<label class="block font-label-caps text-label-caps text-on-surface-variant">Urgency Level</label>
+<select class="w-full glass-input rounded-lg p-3 text-on-surface font-body-md appearance-none bg-transparent">
+<option class="bg-surface-container-high text-on-surface" value="low">Standard Priority</option>
+<option class="bg-surface-container-high text-on-surface" value="medium">Elevated Priority</option>
+<option class="bg-surface-container-high text-on-surface" value="high">Critical Dispatch</option>
+</select>
+</div>
+</div>
+<!-- CTA -->
+<div class="pt-4">
+<button class="w-full bg-primary text-on-primary font-body-md font-semibold py-4 rounded-lg btn-glow flex items-center justify-center gap-2 group" type="button">
+<span>Initialize Intelligence Dispatch</span>
+<span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+</form>
+</div>
+<!-- AI Output Terminal -->
+<div class="glass-panel rounded-xl p-4 animate-fade-in-up delay-200 opacity-0 bg-surface-container-lowest/80 border-t-2 border-t-tertiary/30">
+<div class="flex items-center gap-2 mb-3 border-b border-white/5 pb-2">
+<span class="material-symbols-outlined text-[14px] text-tertiary">terminal</span>
+<span class="font-data-mono text-[10px] text-tertiary tracking-widest uppercase">System Thought Process</span>
+</div>
+<div class="h-24 overflow-y-auto terminal-scroll font-data-mono text-data-mono text-xs text-on-surface-variant/80 space-y-1" id="ai-terminal">
+<div class="flex gap-2">
+<span class="text-outline-variant">&gt; </span>
+<span>Awaiting input parameters...</span>
+</div>
+<!-- Terminal content will be injected here via JS for interaction if needed, keeping static for now to fit specs -->
+<div class="flex gap-2 text-primary/80">
+<span class="text-outline-variant">&gt; </span>
+<span>System standby<span class="cursor-blink">_</span></span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<script>
+        // Micro-interaction: Simulate terminal thinking on form interaction
+        document.addEventListener('DOMContentLoaded', () => {
+            const textarea = document.querySelector('textarea');
+            const terminal = document.getElementById('ai-terminal');
+            
+            let typingTimer;
+            
+            textarea.addEventListener('input', () => {
+                clearTimeout(typingTimer);
+                
+                // Show thinking state
+                terminal.innerHTML = `
+                    <div class="flex gap-2 text-on-surface-variant/60">
+                        <span class="text-outline-variant">>&nbsp;</span>
+                        <span>Previous state logged.</span>
+                    </div>
+                    <div class="flex gap-2 text-tertiary">
+                        <span class="text-outline-variant">>&nbsp;</span>
+                        <span>Scanning syntax patterns...</span>
+                    </div>
+                    <div class="flex gap-2 text-primary">
+                        <span class="text-outline-variant">>&nbsp;</span>
+                        <span>Processing input stream<span class="cursor-blink">_</span></span>
+                    </div>
+                `;
+                
+                // Simulate resolution after typing stops
+                typingTimer = setTimeout(() => {
+                    if(textarea.value.trim().length > 0) {
+                        terminal.innerHTML += `
+                            <div class="flex gap-2 text-secondary mt-1">
+                                <span class="text-outline-variant">>&nbsp;</span>
+                                <span>Initial context parsed. Ready for dispatch sequence.</span>
+                            </div>
+                        `;
+                        terminal.scrollTop = terminal.scrollHeight;
+                    }
+                }, 1000);
+            });
+        });
+    </script>
+</body></html>
