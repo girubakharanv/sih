@@ -2,13 +2,9 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const CustomerContext = createContext();
 
-export const LANGUAGES = [
-  { code: 'en', name: 'English', native: 'English', flag: '🌐' },
-  { code: 'hi', name: 'Hindi', native: 'हिन्दी', flag: '🇮🇳' },
-  { code: 'ta', name: 'Tamil', native: 'தமிழ்', flag: '🇮🇳' },
-  { code: 'te', name: 'Telugu', native: 'తెలుగు', flag: '🇮🇳' },
-  { code: 'kn', name: 'Kannada', native: 'ಕನ್ನಡ', flag: '🇮🇳' }
-];
+import { SUPPORTED_LANGUAGES } from '../services/i18n';
+
+export const LANGUAGES = SUPPORTED_LANGUAGES;
 
 export const SERVICE_ROOMS = [
   { id: 1, name: 'Electrical', code: 'RM-01', color: '#f59e0b', icon: 'electrical_services', count: '142 Workers' },
@@ -122,7 +118,7 @@ export const INITIAL_QUALIFIED_WORKERS = [
 export function CustomerProvider({ children }) {
   // Current Customer Auth / Profile
   const [customer, setCustomer] = useState({
-    isAuthenticated: true,
+    isAuthenticated: false,
     id: 'CUST-8841',
     name: 'Aarav Sundaram',
     email: 'aarav.sundaram@univo.network',

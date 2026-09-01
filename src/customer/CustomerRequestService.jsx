@@ -428,8 +428,7 @@ export default function CustomerRequestService() {
                       IMPORTANT: PRELIMINARY ALGORITHMIC DIAGNOSIS
                     </span>
                     <span>
-                      The analysis below is an initial computerized assessment based on optical input. 
-                      <strong> Final technical diagnosis, root-cause isolation, and physical verification belong exclusively to the qualified cooperative worker on-site.</strong>
+                      AI assessment is preliminary. Final diagnosis is determined by the service worker on site.
                     </span>
                   </div>
                 </div>
@@ -604,6 +603,10 @@ export default function CustomerRequestService() {
 
                 {voiceStructuredResult && (
                   <div className="pt-4 border-t border-white/10 space-y-4">
+                    <div className="p-3 rounded-xl bg-tertiary/10 border border-tertiary/30 text-xs font-mono text-tertiary flex items-start gap-2">
+                      <span className="material-symbols-outlined text-sm mt-0.5">report_problem</span>
+                      <span>AI assessment is preliminary. Final diagnosis is determined by the service worker on site.</span>
+                    </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">
                       <div className="p-3 rounded-xl bg-white/5 border border-white/5">
                         <span className="text-on-surface-variant text-[10px] uppercase">Service Chamber</span>
@@ -688,6 +691,11 @@ export default function CustomerRequestService() {
                 <div className="text-xs font-mono text-tertiary font-bold uppercase tracking-wider flex items-center gap-1.5">
                   <span className="material-symbols-outlined text-sm">psychology</span>
                   <span>Extracted Structured Specifications</span>
+                </div>
+                
+                <div className="p-3 rounded-xl bg-tertiary/10 border border-tertiary/30 text-xs font-mono text-tertiary flex items-start gap-2">
+                  <span className="material-symbols-outlined text-sm mt-0.5">report_problem</span>
+                  <span>AI assessment is preliminary. Final diagnosis is determined by the service worker on site.</span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">

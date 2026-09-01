@@ -40,7 +40,8 @@ export function WorkerProvider({ children }) {
       lateNightTrips: 1,
       restRecommended: false,
       restShieldActive: false
-    }
+    },
+    isAuthenticated: false
   });
 
   // Dynamic Skill DNA & Verification Pipeline Status

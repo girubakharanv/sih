@@ -225,6 +225,16 @@ export default function GovernanceHub() {
             ))}
           </div>
         </div>
+
+        <div className="mt-4 text-center animate-fade-in-up flex justify-center">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-on-surface-variant hover:text-white border border-white/10 transition-all text-xs font-mono"
+          >
+            <span className="material-symbols-outlined text-sm">home</span>
+            <span>Return to Home</span>
+          </Link>
+        </div>
       </div>
     </div>
   );

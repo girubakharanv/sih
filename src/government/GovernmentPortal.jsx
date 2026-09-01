@@ -97,6 +97,12 @@ export default function GovernmentPortal() {
             <p className="text-xs md:text-sm text-on-surface-variant font-mono mt-1 max-w-3xl">
               Official compliance telemetric oversight for municipal authorities, labor ministries, and social audit ombudsmen. Live cryptographic verification of living wages, welfare disbursement, and crisis mitigation.
             </p>
+            <div className="mt-3 p-3 rounded-xl bg-error/10 border border-error/20 inline-flex items-start gap-2">
+              <span className="material-symbols-outlined text-sm text-error mt-0.5">privacy_tip</span>
+              <p className="text-[10px] font-mono text-error/90 leading-relaxed max-w-xl">
+                <strong>STRICT DATA GOVERNANCE ENFORCED:</strong> All data displayed is aggregated, anonymized, and strictly cooperative-level or regional. Individual worker/customer private information (including passwords, specific geolocation traces, and personal welfare cases) is explicitly blocked from government access. The government monitors impact but <strong>cannot directly assign or penalize individual workers.</strong>
+              </p>
+            </div>
           </div>
 
           <button
@@ -145,11 +151,15 @@ export default function GovernmentPortal() {
                 <h3 className="font-sans font-bold text-base text-white">44. Cooperative Health &amp; Solvency</h3>
               </div>
               <span className="text-secondary font-bold text-[10px] px-2 py-0.5 rounded bg-secondary/15 border border-secondary/30">
-                AUDITED: GREEN
+                AUDITED: HEALTHY
               </span>
             </div>
 
             <div className="space-y-2.5 text-[11px]">
+              <div className="flex justify-between p-3 rounded-xl bg-white/5 items-center">
+                <span className="text-on-surface-variant">Overall Health Indicator:</span>
+                <span className="px-2 py-1 bg-secondary/20 text-secondary font-bold rounded">HEALTHY</span>
+              </div>
               <div className="flex justify-between p-3 rounded-xl bg-white/5">
                 <span className="text-on-surface-variant">Statutory Audit Rating:</span>
                 <strong className="text-white">Clean Unqualified Opinion (FY 2026)</strong>

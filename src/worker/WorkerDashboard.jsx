@@ -520,10 +520,12 @@ export default function WorkerDashboard() {
             <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-1 font-mono text-xs">
               <div className="flex items-center gap-1.5 text-secondary font-bold">
                 <span className="material-symbols-outlined text-sm">balance</span>
-                <span>Cooperative Fairness Information:</span>
+                <span>Cooperative Fair Dispatch:</span>
               </div>
               <p className="text-on-surface-variant leading-relaxed text-[11px]">
-                {incomingOffer.fairnessInfo}
+                Matched based on: Skill Match, Distance, Availability, Trust, Current Workload, and Fair Opportunity Adjustment. 
+                <br /><strong className="text-white mt-1 block">Important: Fairness must NEVER override qualification.</strong>
+                <br />Declining this mission carries zero penalty or score decrement.
               </p>
             </div>
 

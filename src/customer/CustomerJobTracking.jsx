@@ -105,6 +105,9 @@ export default function CustomerJobTracking() {
             <span className="text-xs font-mono text-secondary font-bold uppercase tracking-wider">
               Live Satellite &amp; Telemetry Feed
             </span>
+            <span className="text-[10px] font-mono bg-error/20 text-error border border-error/40 px-2 py-0.5 rounded ml-2 uppercase font-bold tracking-widest">
+              DEMO tracking
+            </span>
           </div>
         </div>
 

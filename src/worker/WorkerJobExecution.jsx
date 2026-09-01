@@ -471,7 +471,7 @@ export default function WorkerJobExecution() {
                     className="px-4 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-on-primary font-bold font-sans flex items-center gap-2 shadow-[0_0_15px_rgba(173,198,255,0.3)]"
                   >
                     <span className="material-symbols-outlined text-sm">support_agent</span>
-                    <span>Dial Guild Senior Mentor</span>
+                    <span>Dial Guild Senior Mentor <span className="text-[10px] bg-black/40 px-1 rounded ml-1 border border-white/20">[DEMO INTERFACE]</span></span>
                   </button>
                 )}
               </div>
@@ -513,15 +513,26 @@ export default function WorkerJobExecution() {
               </p>
             </div>
 
-            <div>
-              <label className="block text-xs font-mono uppercase text-on-surface-variant font-semibold mb-2">
-                Technical Execution Log (Saved to Customer Ledger):
-              </label>
-              <textarea
-                value={jobNote}
-                onChange={(e) => setJobNote(e.target.value)}
-                className="w-full bg-[#1c1b1c] border border-white/10 rounded-2xl p-4 text-xs font-mono text-white focus:outline-none focus:border-secondary min-h-[100px] resize-none"
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="p-4 rounded-2xl bg-white/5 border border-white/10 font-mono text-xs space-y-2">
+                <label className="block uppercase text-on-surface-variant font-semibold">
+                  AI Preliminary Assessment
+                </label>
+                <div className="text-white p-3 rounded-xl bg-[#0e0e0f]/80 border border-white/5 leading-relaxed">
+                  {job.preliminaryDiagnosis?.probableProblem || "No preliminary AI assessment provided."}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-mono uppercase text-secondary font-bold mb-2">
+                  Worker Final Diagnosis (Authoritative Log):
+                </label>
+                <textarea
+                  value={jobNote}
+                  onChange={(e) => setJobNote(e.target.value)}
+                  className="w-full bg-[#1c1b1c] border border-secondary/30 rounded-2xl p-4 text-xs font-mono text-white focus:outline-none focus:border-secondary min-h-[100px] resize-none"
+                />
+              </div>
             </div>
 
             {/* Financial Settlement Review */}

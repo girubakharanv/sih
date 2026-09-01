@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import MissionControlModal from './MissionControlModal';
+import { useCustomer } from '../customer/CustomerContext';
+import { useGovernment } from '../government/GovernmentContext';
+import { useTranslation } from '../context/I18nContext';
 
 export default function Navigation() {
   const location = useLocation();
+  const { language, setLanguage, t } = useTranslation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMissionControlOpen, setIsMissionControlOpen] = useState(false);
   const [timeStr, setTimeStr] = useState('');
@@ -18,16 +22,48 @@ export default function Navigation() {
     return () => clearInterval(interval);
   }, []);
 
-  const navItems = [
-    { path: '/customer', label: 'Customer Portal', icon: 'person' },
-    { path: '/worker', label: 'Worker Command', icon: 'engineering' },
-    { path: '/engine', label: 'Core AI Engine', icon: 'psychology' },
-    { path: '/governance', label: 'Democracy & Governance', icon: 'how_to_vote' },
-    { path: '/crisis', label: 'Crisis Command', icon: 'emergency_home' },
-    { path: '/government', label: 'Govt Oversight', icon: 'verified_user' },
-    { path: '/welfare', label: 'Mutual Aid', icon: 'health_and_safety' },
-    { path: '/parametric', label: 'Climate Shield', icon: 'cyclone' }
+  const { customer, updateCustomer } = useCustomer();
+  const { government, updateGovernment } = useGovernment();
+  const isCustomerRoute = location.pathname.startsWith('/customer');
+  const isWorkerRoute = location.pathname.startsWith('/worker');
+  const isGovRoute = location.pathname.startsWith('/government');
+
+  const globalNavItems = [
+    { path: '/customer', label: t('customerPortal'), icon: 'person' },
+    { path: '/worker', label: t('workerCommand'), icon: 'engineering' },
+    { path: '/engine', label: t('coreAiEngine'), icon: 'psychology' },
+    { path: '/governance', label: t('democracyGov'), icon: 'how_to_vote' },
+    { path: '/crisis', label: t('crisisCommand'), icon: 'emergency_home' },
+    { path: '/government', label: t('govtOversight'), icon: 'verified_user' },
+    { path: '/welfare', label: t('mutualAid'), icon: 'health_and_safety' },
+    { path: '/parametric', label: t('climateShield'), icon: 'cyclone' }
   ];
+
+  const customerNavItems = [
+    { path: '/customer', label: t('Home'), icon: 'home' },
+    { path: '/customer/request', label: t('requestService'), icon: 'bolt' }
+  ];
+
+  const workerNavItems = [
+    { path: '/worker', label: t('Home'), icon: 'home' },
+    { path: '/worker/jobs', label: t('Jobs'), icon: 'work' },
+    { path: '/worker/passport', label: t('Passport'), icon: 'badge' },
+    { path: '/worker/skills', label: t('Skill DNA'), icon: 'radar' },
+    { path: '/worker/earnings', label: t('Earnings'), icon: 'payments' },
+    { path: '/worker/wellbeing', label: t('Wellbeing'), icon: 'favorite' },
+    { path: '/worker/governance', label: t('Governance'), icon: 'how_to_vote' }
+  ];
+
+  const govNavItems = [
+    { path: '/government/dashboard', label: t('Nat. Dashboard'), icon: 'dashboard' },
+    { path: '/government/cooperatives', label: t('Cooperatives'), icon: 'account_balance' },
+    { path: '/government/employment', label: t('Employment'), icon: 'work' },
+    { path: '/government/coverage', label: t('Service Coverage'), icon: 'map' },
+    { path: '/government/reports', label: t('Reports'), icon: 'assessment' },
+    { path: '/government/privacy', label: t('Data Governance'), icon: 'security' }
+  ];
+
+  const navItems = isCustomerRoute ? customerNavItems : (isWorkerRoute ? workerNavItems : (isGovRoute ? govNavItems : globalNavItems));
 
   return (
     <>
@@ -110,10 +146,9 @@ export default function Navigation() {
 
             {/* Language Switcher Dropdown */}
             <select
-              defaultValue={localStorage.getItem('univo_language') || 'en'}
+              value={language}
               onChange={(e) => {
-                localStorage.setItem('univo_language', e.target.value);
-                window.location.reload();
+                setLanguage(e.target.value);
               }}
               title="Select Language"
               className="bg-black/60 border border-white/15 text-white text-xs rounded-xl px-2 py-1 font-mono focus:outline-none focus:border-primary cursor-pointer"
@@ -122,6 +157,7 @@ export default function Navigation() {
               <option value="hi">HI (हिन्दी)</option>
               <option value="ta">TA (தமிழ்)</option>
               <option value="te">TE (తెలుగు)</option>
+              <option value="kn">KN (ಕನ್ನಡ)</option>
               <option value="bn">BN (বাংলা)</option>
               <option value="mr">MR (मराठी)</option>
             </select>
@@ -140,22 +176,64 @@ export default function Navigation() {
             </button>
 
             {/* Assisted Registration Quick Link for Low-Literacy Workers */}
-            <Link
-              to="/worker/assisted-register"
-              title="Assisted Worker Registration (Voice & Icon Guided)"
-              className="hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-secondary/15 border border-secondary/40 text-secondary text-xs font-mono font-bold hover:bg-secondary/25 transition-all"
-            >
-              <span className="material-symbols-outlined text-sm">record_voice_over</span>
-              <span>Assisted Onboard</span>
-            </Link>
+            {!isGovRoute && (
+              <Link
+                to="/worker/assisted-register"
+                title="Assisted Worker Registration (Voice & Icon Guided)"
+                className="hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-secondary/15 border border-secondary/40 text-secondary text-xs font-mono font-bold hover:bg-secondary/25 transition-all"
+              >
+                <span className="material-symbols-outlined text-sm">record_voice_over</span>
+                <span>Assisted Onboard</span>
+              </Link>
+            )}
 
-            <Link
-              to="/request"
-              className="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary hover:bg-primary/90 text-on-primary font-semibold text-xs transition-all shadow-[0_0_15px_rgba(173,198,255,0.3)] hover:scale-105 active:scale-95"
-            >
-              <span className="material-symbols-outlined text-sm">bolt</span>
-              <span>New Request</span>
-            </Link>
+            {!isCustomerRoute && !isWorkerRoute && !isGovRoute && (
+              <Link
+                to="/request"
+                className="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary hover:bg-primary/90 text-on-primary font-semibold text-xs transition-all shadow-[0_0_15px_rgba(173,198,255,0.3)] hover:scale-105 active:scale-95"
+              >
+                <span className="material-symbols-outlined text-sm">bolt</span>
+                <span>New Request</span>
+              </Link>
+            )}
+
+            {isCustomerRoute && customer.isAuthenticated && (
+              <button
+                onClick={() => {
+                  updateCustomer({ isAuthenticated: false });
+                  window.location.href = '/customer/auth';
+                }}
+                className="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-error/20 hover:bg-error/30 text-error font-semibold text-xs transition-all border border-error/30"
+              >
+                <span className="material-symbols-outlined text-sm">logout</span>
+                <span>Logout</span>
+              </button>
+            )}
+
+            {isWorkerRoute && (
+              <button
+                onClick={() => {
+                  window.location.href = '/worker/auth';
+                }}
+                className="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-error/20 hover:bg-error/30 text-error font-semibold text-xs transition-all border border-error/30"
+              >
+                <span className="material-symbols-outlined text-sm">logout</span>
+                <span>Logout</span>
+              </button>
+            )}
+
+            {isGovRoute && government.isAuthenticated && (
+              <button
+                onClick={() => {
+                  updateGovernment({ isAuthenticated: false });
+                  window.location.href = '/government/auth';
+                }}
+                className="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-error/20 hover:bg-error/30 text-error font-semibold text-xs transition-all border border-error/30"
+              >
+                <span className="material-symbols-outlined text-sm">logout</span>
+                <span>Logout</span>
+              </button>
+            )}
 
             {/* Mobile Menu Button */}
             <button

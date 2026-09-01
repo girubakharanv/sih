@@ -161,6 +161,9 @@ export default function CustomerWorkerSelection() {
               <h2 className="text-xl font-bold text-white font-sans mt-0.5">
                 Matched via Cooperative Skill DNA &amp; Fairness Index
               </h2>
+              <p className="text-xs font-mono text-secondary/80 mt-2">
+                UNIVO selected this worker based on qualification, suitability, availability, location and fair opportunity allocation.
+              </p>
             </div>
             <span className="text-xs font-mono text-on-surface-variant">
               Showing 4 Certified Candidates

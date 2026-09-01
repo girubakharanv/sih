@@ -56,15 +56,23 @@ export default function WorkerWellbeing() {
                 The Zero-Penalty Rest Guarantee
               </h2>
               <p className="text-xs font-mono text-on-surface-variant leading-relaxed mt-1">
-                Taking recommended rest or setting limits <strong>will NEVER lower your algorithmic match score, search visibility, or priority dispatch status</strong>.
-                When you activate the Rest Shield, your priority tier is locked in cryogenic hold until you return.
+                <strong>Important: Recommended rest must NOT permanently reduce future job opportunities.</strong>
+                <br />When you activate the Rest Shield, your priority tier is locked in cryogenic hold until you return.
               </p>
             </div>
           </div>
         </div>
 
         {/* Real-time Fatigue Metrics */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 font-mono text-xs">
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 font-mono text-xs">
+          <div className="glass-card p-5 rounded-2xl border border-secondary/30 bg-secondary/10">
+            <span className="text-[10px] text-on-surface-variant uppercase font-semibold">Overall Wellbeing Status</span>
+            <div className="text-2xl font-bold text-secondary mt-1">
+              {worker.wellbeing.score > 80 ? 'Healthy' : worker.wellbeing.score > 60 ? 'Monitor' : worker.wellbeing.score > 40 ? 'At Risk' : 'Critical'}
+            </div>
+            <span className="text-[10px] text-secondary">Score: {worker.wellbeing.score}/100</span>
+          </div>
+
           <div className="glass-card p-5 rounded-2xl border border-white/10">
             <span className="text-[10px] text-on-surface-variant uppercase font-semibold">Today's Active Hours</span>
             <div className="text-2xl font-bold text-white mt-1">{worker.wellbeing.hoursToday} / 8.0h</div>

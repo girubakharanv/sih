@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCustomer, SERVICE_ROOMS, LANGUAGES } from './CustomerContext';
 import ShaderBackground from '../components/ShaderBackground';
+import { useTranslation } from '../context/I18nContext';
 
 export default function CustomerHome() {
   const navigate = useNavigate();
+  const { language, setLanguage, t } = useTranslation();
   const {
     customer,
     updateCustomer,
@@ -81,7 +83,7 @@ export default function CustomerHome() {
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="font-sans font-bold text-2xl text-white">
-                  Welcome, {customer.name}
+                  {t('welcome')}, {customer.name}
                 </h1>
                 <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20">
                   {customer.id}
@@ -113,9 +115,9 @@ export default function CustomerHome() {
               {LANGUAGES.map((lang) => (
                 <button
                   key={lang.code}
-                  onClick={() => updateCustomer({ selectedLanguage: lang.code })}
+                  onClick={() => setLanguage(lang.code)}
                   className={`px-2.5 py-1 rounded-lg transition-all ${
-                    customer.selectedLanguage === lang.code
+                    language === lang.code
                       ? 'bg-primary/20 text-primary font-bold border border-primary/30'
                       : 'text-on-surface-variant hover:text-white'
                   }`}
@@ -132,7 +134,7 @@ export default function CustomerHome() {
               className="px-4 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-on-primary font-sans font-bold text-xs shadow-[0_0_15px_rgba(173,198,255,0.3)] transition-all flex items-center gap-2 hover:scale-105"
             >
               <span className="material-symbols-outlined text-base">add_circle</span>
-              <span>Request Service</span>
+              <span>{t('requestService')}</span>
             </Link>
           </div>
         </div>
@@ -144,14 +146,14 @@ export default function CustomerHome() {
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/15 border border-primary/30 mb-2">
                 <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
                 <span className="text-[10px] font-mono text-primary uppercase tracking-widest font-bold">
-                  UNIVO Platform Manifesto
+                  {t('univoPlatformManifesto')}
                 </span>
               </div>
               <h2 className="text-2xl md:text-3xl font-sans font-bold text-white tracking-tight">
-                One Platform for India's Distributed Workforce
+                {t('onePlatformForIndia')}
               </h2>
               <p className="text-xs font-mono text-on-surface-variant max-w-3xl mt-1 leading-relaxed">
-                Transforming informal gig labor into a sovereign artisan cooperative. Every service request runs through strict qualification gates, explainable fair dispatch, and a cryptographic tamper-evident ledger.
+                {t('transformingInformalGig')}
               </p>
             </div>
 
@@ -161,14 +163,14 @@ export default function CustomerHome() {
                 className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-white font-mono text-xs border border-white/10 transition-all flex items-center gap-1.5"
               >
                 <span className="material-symbols-outlined text-sm">view_in_ar</span>
-                <span>Enter 3D World</span>
+                <span>{t('enter3dWorld')}</span>
               </Link>
               <Link
                 to="/engine"
                 className="px-4 py-2 rounded-xl bg-secondary/20 hover:bg-secondary/30 text-secondary font-mono text-xs border border-secondary/40 transition-all flex items-center gap-1.5 font-bold"
               >
                 <span className="material-symbols-outlined text-sm">psychology</span>
-                <span>AI Sandbox</span>
+                <span>{t('aiSandbox')}</span>
               </Link>
             </div>
           </div>
@@ -177,30 +179,30 @@ export default function CustomerHome() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-white/10 font-mono text-xs">
             <div className="p-3 rounded-xl bg-black/30 border border-white/5 space-y-1">
               <span className="text-[10px] text-primary uppercase font-bold flex items-center gap-1">
-                <span className="material-symbols-outlined text-xs">verified</span> Verified Passport
+                <span className="material-symbols-outlined text-xs">verified</span> {t('verifiedPassport')}
               </span>
-              <p className="text-[11px] text-white">Sovereign DID + Skill DNA radar</p>
+              <p className="text-[11px] text-white">{t('sovereignDid')}</p>
             </div>
 
             <div className="p-3 rounded-xl bg-black/30 border border-white/5 space-y-1">
               <span className="text-[10px] text-secondary uppercase font-bold flex items-center gap-1">
-                <span className="material-symbols-outlined text-xs">alt_route</span> Fair Dispatch
+                <span className="material-symbols-outlined text-xs">alt_route</span> {t('fairDispatch')}
               </span>
-              <p className="text-[11px] text-white">Safety gated + Gini equity index</p>
+              <p className="text-[11px] text-white">{t('safetyGated')}</p>
             </div>
 
             <div className="p-3 rounded-xl bg-black/30 border border-white/5 space-y-1">
               <span className="text-[10px] text-tertiary uppercase font-bold flex items-center gap-1">
-                <span className="material-symbols-outlined text-xs">receipt_long</span> Hash Ledger
+                <span className="material-symbols-outlined text-xs">receipt_long</span> {t('hashLedger')}
               </span>
-              <p className="text-[11px] text-white">SHA-256 transparent 6-way split</p>
+              <p className="text-[11px] text-white">{t('sha256Transparent')}</p>
             </div>
 
             <div className="p-3 rounded-xl bg-black/30 border border-white/5 space-y-1">
               <span className="text-[10px] text-white uppercase font-bold flex items-center gap-1">
-                <span className="material-symbols-outlined text-xs">how_to_vote</span> Democracy
+                <span className="material-symbols-outlined text-xs">how_to_vote</span> {t('democracy')}
               </span>
-              <p className="text-[11px] text-white">AI What-If + Worker voting</p>
+              <p className="text-[11px] text-white">{t('aiWhatIf')}</p>
             </div>
           </div>
         </div>
@@ -212,14 +214,14 @@ export default function CustomerHome() {
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary/10 border border-secondary/20 mb-2">
                 <span className="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
                 <span className="text-[10px] font-mono text-secondary uppercase tracking-widest font-semibold">
-                  Multi-Modal Dispatch Engine
+                  {t('multimodalDispatch')}
                 </span>
               </div>
               <h2 className="text-2xl font-bold text-white font-sans">
-                How would you like to describe your problem?
+                {t('howWouldYouLike')}
               </h2>
               <p className="text-xs text-on-surface-variant font-mono mt-1">
-                Choose any medium — our cooperative AI parses visual, acoustic, and textual semantics.
+                {t('chooseAnyMedium')}
               </p>
             </div>
           </div>
@@ -235,15 +237,15 @@ export default function CustomerHome() {
                   <span className="material-symbols-outlined text-2xl">photo_camera</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <h3 className="font-sans font-bold text-white text-base">1. Photo AI Diagnostic</h3>
-                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-primary/15 text-primary">Vision</span>
+                  <h3 className="font-sans font-bold text-white text-base">{t('photoAiDiagnostic')}</h3>
+                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-primary/15 text-primary">{t('vision')}</span>
                 </div>
                 <p className="text-xs text-on-surface-variant font-mono mt-1.5 leading-relaxed">
-                  Snap or upload a photo. AI detects problem, category, urgency, and estimated cost range instantly.
+                  {t('snapOrUpload')}
                 </p>
               </div>
               <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between text-xs font-mono text-primary group-hover:translate-x-1 transition-transform">
-                <span>Snap or Upload</span>
+                <span>{t('snapOrUploadBtn')}</span>
                 <span className="material-symbols-outlined text-sm">arrow_forward</span>
               </div>
             </Link>
@@ -258,15 +260,15 @@ export default function CustomerHome() {
                   <span className="material-symbols-outlined text-2xl">mic</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <h3 className="font-sans font-bold text-white text-base">2. Voice Intake</h3>
-                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-secondary/15 text-secondary">Indian Langs</span>
+                  <h3 className="font-sans font-bold text-white text-base">{t('voiceIntake')}</h3>
+                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-secondary/15 text-secondary">{t('indianLangs')}</span>
                 </div>
                 <p className="text-xs text-on-surface-variant font-mono mt-1.5 leading-relaxed">
-                  Speak naturally in <strong>Tamil, Hindi, or English</strong>. AI extracts intent, urgency, and creates a structured job.
+                  <span dangerouslySetInnerHTML={{ __html: t('speakNaturally').replace('Tamil, Hindi, or English', '<strong>Tamil, Hindi, or English</strong>') }} />
                 </p>
               </div>
               <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between text-xs font-mono text-secondary group-hover:translate-x-1 transition-transform">
-                <span>Start Speaking</span>
+                <span>{t('startSpeaking')}</span>
                 <span className="material-symbols-outlined text-sm">arrow_forward</span>
               </div>
             </Link>
@@ -281,15 +283,15 @@ export default function CustomerHome() {
                   <span className="material-symbols-outlined text-2xl">edit_note</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <h3 className="font-sans font-bold text-white text-base">3. Text Narrative</h3>
-                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-tertiary/15 text-tertiary">NLP Stream</span>
+                  <h3 className="font-sans font-bold text-white text-base">{t('textNarrative')}</h3>
+                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-tertiary/15 text-tertiary">{t('nlpStream')}</span>
                 </div>
                 <p className="text-xs text-on-surface-variant font-mono mt-1.5 leading-relaxed">
-                  Describe what you need in plain text. AI isolates required Skill DNA, preferred schedule, and location.
+                  {t('describeWhatYouNeed')}
                 </p>
               </div>
               <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between text-xs font-mono text-tertiary group-hover:translate-x-1 transition-transform">
-                <span>Describe Issue</span>
+                <span>{t('describeIssue')}</span>
                 <span className="material-symbols-outlined text-sm">arrow_forward</span>
               </div>
             </Link>
